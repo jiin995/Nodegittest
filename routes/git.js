@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-const git = require('simple-git/promise');
+const git = require('simple-git');
 
 
 /* GET home page. */
@@ -18,6 +18,7 @@ router.get('/pull', function (req, res, next) {
     var sshKeyPath = req.query.sshkeypath.replace(" ","");
     var remote = ""
     var GIT_SSH_COMMAND = "ssh -oStrictHostKeyChecking=no -i "
+    var silent = true;
 
     console.log('Action: PULL');
     console.log('URL: '+URL);
@@ -25,10 +26,13 @@ router.get('/pull', function (req, res, next) {
 
     if(sshKeyPath){
         GIT_SSH_COMMAND += sshKeyPath ;
-        git().env({ ...process.env, GIT_SSH_COMMAND })
-            .clone(URL, "./testrepos/" + repoName)
-            .then(() => console.log('finished'))
-            .catch(err => {});
+        git().env({ ...process.env, GIT_SSH_COMMAND }).silent(silent)
+            .clone(URL, "./testrepos/" + repoName, ['-q'], (err) => {
+                if(err)
+                    console.error(err);
+                else
+                    console.log("Finished");
+            });
     }
     //If user setting username and token i will try to clone repo with basic auth
     else {
@@ -42,16 +46,15 @@ router.get('/pull', function (req, res, next) {
         } else
             remote = URL;
 
-        git().clone(remote, "./testrepos/" + repoName)
-            .then(() => console.log('finished'))
-            .catch((err) => {
-                    //console.error('failed: ', err.message);
-                    //console.log("erroType: ",typeof err.message)
-                    if (err.message.includes("not read Username")) {
-                        console.error("Auth error")
-                    }
+        git().silent(silent).clone(URL, "./testrepos/" + repoName, ['-q'], (err) => {
+                //console.error('failed: ', err.message);
+                //console.log("erroType: ",typeof err.message)
+                if (err.includes("not read Username") || err.includes("Permission denied") ) {
+                    console.error("Auth error")
                 }
-            );
+                else
+                    console.log("Finished")
+            });
     }
     res.redirect('/git');
 
