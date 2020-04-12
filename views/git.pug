@@ -1,0 +1,19 @@
+extends layout
+
+block content
+  .main.container
+    .row
+      .col-md-6.col-md-offset-3
+        h1.display-4.m-b-2
+
+        form(method='GET' action='git/pull')
+          div.form-group
+            input#url.form-control(type='text', placeholder='url' name='url')
+            br
+            input#username.form-control(type='text', placeholder='Username' name='username')
+            br
+            input#token.form-control(type='text', placeholder = 'Token' name='token')
+            br
+            input#sshkeypath.form-control(type='text', placeholder = 'ssh key Path' name='sshkeypath')
+            br
+            button.btn.btn-primary(type='submit') PULL
