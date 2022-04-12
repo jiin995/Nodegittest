@@ -12,6 +12,6 @@
     "http-errors": "~1.6.3",
     "morgan": "~1.9.1",
     "pug": "2.0.0-beta11",
-    "simple-git": "^1.132.0"
+    "simple-git": "^3.5.0"
   }
 }
